@@ -34,6 +34,7 @@ async function activate(context) {
 		let question_to_ask = await vscode.window.showInputBox({
 			placeHolder: 'Insert your Question Here',
 			title: 'Ask a Question',
+			ignoreFocusOut: true,
 		});
 		console.log(question_to_ask)
 		// The code you place here will be executed every time your command is executed
