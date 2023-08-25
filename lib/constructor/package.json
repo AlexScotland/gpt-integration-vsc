@@ -1,0 +1,8 @@
+{
+    "type": "module",
+    "name": "ai-constructor",
+    "main": "index.js",
+    "dependencies": {
+        "openai": "version"
+    }
+}
