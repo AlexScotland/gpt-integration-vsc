@@ -16,6 +16,10 @@
       {
         "command": "gpt-integration.ask",
         "title": "Ask GPT"
+      },
+      {
+        "command": "gpt-integration.auto_solve_problems",
+        "title": "Solve problems via GPT"
       }
     ]
   },
