@@ -82,7 +82,9 @@ async function activate(context) {
 			'problem_fix_view', // Unique ID
 			'Problem Fixer', // Title
 			vscode.ViewColumn.One, // Editor column to show the panel
-			{}
+			{
+				enableScripts: true,
+			}
 		);
 		
 		// Load your HTML content into the WebView panel
@@ -90,9 +92,27 @@ async function activate(context) {
 		let ui_builder = new UIBuilder();
 		let diagnostic_builder = new DiagnosticFactory();
 		panel.webview.html = panel.webview.html + ui_builder.build_given_item_list(diagnostic_builder.problems);
+		panel.webview.html = panel.webview.html + ui_builder.js
 	});
 
 	context.subscriptions.push(problem_window_actions);
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewPanelSerializer('problem_fix_view', {
+		  async deserializeWebviewPanel(webviewPanel) {
+			webviewPanel.webview.onDidReceiveMessage(message => {
+			  // Handle the message from the WebView
+			  switch (message.command) {
+				case 'gpt-integration.ask':
+				  // Access message.data for the data sent from the WebView
+				  const receivedData = message.data;
+				  console.log(receivedData)
+				// Add more cases for different message commands if necessary
+			  }
+			});
+		  },
+		})
+	  );
 
 }
 
