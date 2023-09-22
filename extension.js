@@ -3,6 +3,10 @@
 const vscode = require('vscode');
 const axios = require('axios');
 
+const { UIBuilder } = require('./lib/user-interface/ui_builder');
+const { DiagnosticFactory } = require('./lib/diagnostic/diagnostic_factory');
+
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -26,17 +30,16 @@ async function activate(context) {
 		ignoreFocusOut: true,
 		password: true
 	});
-	
+
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('gpt-integration.ask', async function () {
-		
+
 		let question_to_ask = await vscode.window.showInputBox({
 			placeHolder: 'Insert your Question Here',
 			title: 'Ask a Question',
 			ignoreFocusOut: true,
 		});
-		console.log(question_to_ask)
 		// The code you place here will be executed every time your command is executed
 		axios.post(
 			'https://api.openai.com/v1/chat/completions',
@@ -44,12 +47,12 @@ async function activate(context) {
 				"model": "gpt-3.5-turbo",
 				"messages": [
 					{
-					"role": "system",
-					"content": "This conversation involves a developer asking for help."
+						"role": "system",
+						"content": "This conversation involves a developer asking for help."
 					},
 					{
-					"role": "user",
-					"content": question_to_ask
+						"role": "user",
+						"content": question_to_ask
 					}
 				]
 			},
@@ -61,22 +64,40 @@ async function activate(context) {
 				}
 			}
 		)
-		.then(function (response) {
-			let message = response['data']['choices'][0]['message']['content'];
-			vscode.window.showInformationMessage(message)
-		  })
-		  .catch(function (error) {
-			console.log(error);
-		  });
+			.then(function (response) {
+				let message = response['data']['choices'][0]['message']['content'];
+				vscode.window.showInformationMessage(message)
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
 		// Display a message box to the user
-		
+
 	});
 
 	context.subscriptions.push(disposable);
+
+	let problem_window_actions = vscode.commands.registerCommand('gpt-integration.problem_panel', () => {
+		const panel = vscode.window.createWebviewPanel(
+			'problem_fix_view', // Unique ID
+			'Problem Fixer', // Title
+			vscode.ViewColumn.One, // Editor column to show the panel
+			{}
+		);
+		
+		// Load your HTML content into the WebView panel
+		panel.webview.html = '<h1>Lets Fix those Problems</h1>';
+		let ui_builder = new UIBuilder();
+		let diagnostic_builder = new DiagnosticFactory();
+		panel.webview.html = panel.webview.html + ui_builder.build_given_item_list(diagnostic_builder.problems);
+	});
+
+	context.subscriptions.push(problem_window_actions);
+
 }
 
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,

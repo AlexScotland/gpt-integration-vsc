@@ -16,6 +16,10 @@
       {
         "command": "gpt-integration.ask",
         "title": "Ask GPT"
+      },
+      {
+        "command": "gpt-integration.problem_panel",
+        "title": "Problem Detection using GPT"
       }
     ]
   },
